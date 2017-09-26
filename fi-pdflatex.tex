@@ -1,0 +1,109 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% I, the copyright holder of this work, release this work into the
+%% public domain. This applies worldwide. In some countries this may
+%% not be legally possible; if so: I grant anyone the right to use
+%% this work for any purpose, without any conditions, unless such
+%% conditions are required by law.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[
+  digital, %% This option enables the default options for the
+           %% digital version of a document. Replace with `printed`
+           %% to enable the default options for the printed version
+           %% of a document.
+  table,   %% Causes the coloring of tables. Replace with `notable`
+           %% to restore plain tables.
+  lof,     %% Prints the List of Figures. Replace with `nolof` to
+           %% hide the List of Figures.
+  lot,     %% Prints the List of Tables. Replace with `nolot` to
+           %% hide the List of Tables.
+  %% More options are listed in the user guide at
+  %% <http://mirrors.ctan.org/macros/latex/contrib/fithesis/guide/mu/fi.pdf>.
+]{fithesis3}
+%% The following section sets up the locales used in the thesis.
+\usepackage[resetfonts]{cmap} %% We need to load the T2A font encoding
+\usepackage[T1,T2A]{fontenc}  %% to use the Cyrillic fonts with Russian texts.
+\usepackage[
+  main=english, %% By using `czech` or `slovak` as the main locale
+                %% instead of `english`, you can typeset the thesis
+                %% in either Czech or Slovak, respectively.
+  german, russian, czech, slovak %% The additional keys allow
+]{babel}        %% foreign texts to be typeset as follows:
+%%
+%%   \begin{otherlanguage}{german}  ... \end{otherlanguage}
+%%   \begin{otherlanguage}{russian} ... \end{otherlanguage}
+%%   \begin{otherlanguage}{czech}   ... \end{otherlanguage}
+%%   \begin{otherlanguage}{slovak}  ... \end{otherlanguage}
+%%
+%% For non-Latin scripts, it may be necessary to load additional
+%% fonts:
+\usepackage{paratype}
+\def\textrussian#1{{\usefont{T2A}{PTSerif-TLF}{m}{rm}#1}}
+%%
+%% The following section sets up the metadata of the thesis.
+\thesissetup{
+    date          = \the\year/\the\month/\the\day,
+    university    = mu,
+    faculty       = fi,
+    type          = bc,
+    author        = Šimon Priadka,
+    gender        = m,
+    advisor       = {Bruno Rossi, Ph.D},
+    title         = {Strategies for the Application of Mutation Testing to Large Software Projects},
+    TeXtitle      = {Strategies for the Application of Mutation Testing to Large Software Projects},
+    keywords      = {Test coverage, Mutation testing, Pitest},
+    TeXkeywords   = {Test coverage, Mutation testing, Pitest},
+    bib           = example.bib,
+}
+\thesislong{abstract}{
+    Mutation testing is powerful technique to analyze test coverage of software projects. It has the potential to be industry standard in process of quality assurance. While the idea behind Mutation testing was formed about three decades ago, it isn't still widely adopted. One of main reason why mutation testing is not being present in the process of software development is due to its time complexity. The aim of this thesis consists of two parts. First part is to evaluate several strategies for the reduction of complexity when applying Mutation testing in an industrial setting in the context of large Java-based software projects. Second part consists of implementing new strategies and evaluating this outcome on selected software repositories.
+}
+\thesislong{thanks}{
+    This is the acknowledgement for my thesis, which can
+
+    span multiple paragraphs.
+}
+\usepackage{makeidx}      %% The `makeidx` package contains
+\makeindex                %% helper commands for index typesetting.
+%% These additional packages are used within the document:
+\usepackage{paralist} %% Compact list environments
+\usepackage{amsmath}  %% Mathematics
+\usepackage{amsthm}
+\usepackage{amsfonts}
+\usepackage{url}      %% Hyperlinks
+\usepackage{markdown} %% Lightweight Markup
+\begin{document}
+\chapter{Introduction}
+Software testing is undoubtedly important part of the process of software development. Studies have shown, that software testing can cost up to 50\% of development budget.\footfullcite{Software_techniques}  The more we test our code, the less likely we'll encounter problems in the production. Code coverage is a metric with purpose to inform us how much is our code covered in tests. But what if we are getting a lot of error reports despite our high code coverage? Are our tests good enough? Are we testing all of the edge cases where our software is failing? Mutation testing provides answer to these questions.  
+\par The idea of Mutation testing originated over four decades ago.\footfullcite{origin}
+It consists of running software tests against mutants. Mutants are copies of original source code with one modification called mutation. Mutations are not generated randomly, but their creation is based on predefined set of syntactic rules, called mutation operators\footnote{Many of these mutant operators can be listed at \url{http://pitest.org/quickstart/mutators/}}. Traditional mutation operators consists of statement deletions (e.g remove \texttt{break} from \texttt{while} loop), statement modifications (e.g replace \texttt{while} with \texttt{for} loop), boolean expressions modifications (e.g switching \texttt{==} with \texttt{!=}), variables/constants replacement. These traditional mutation operators are mostly language independent. There exist also mutation operators designed to mutate language-specific constructs as well, e.g polymorphism, encapsulation, inheritance.
+\par After the tests are ran, mutant can be either alive or killed. If the test fails, mutant is considered killed. If not, it is considered alive. If any mutant is alive, it can have two meanings: that the tests are not sensitive enough to catch the modified code or that this mutant is equivalent. An equivalent mutant is syntactically different from the original, but its semantics are the same and therefore it is impossible for tests to detect them. \par The final indication of tests quality is mutation score, that is the percentage of non-equivalent mutants killed by the test data or in other terms, the number of killed mutants over the number of non-equivalent mutants generated .Test data is considered mutation-adequate if the mutation score is 100\%. Mutation score leads to iterative improvement of testing, moreover, inspecting live mutants can lead to discovery and resolution of other source code issues.
+\par Process of Mutation testing takes a lot of time. With increasing amount of written source code, time complexity of Mutation testing grows as well. It is it's time complexity that keeps it from becoming industry adapted standard.
+\par Most widely used tool for mutation testing of software written in Java language is PIT, also known as PITest. Among other mutation testing solutions for code written in Java language (e.g Judy, Javalanche, MuJava) it is under most active development. It was created as open-source project by Henry Coles. As this thesis is aiming to investigate adaptation of Mutation testing on software mainly written in Java language, PITest was chosen as the tool of choice for analysis and implementation of Mutation testing strategies.
+
+\par The work in this thesis is split into four additional chapters. In Chapter 2 we will examine current existing strategies for reducing the amount of time required by Mutation testing. In Chapter 3 we will discuss possible strategies for adopting mutation testing in big software projects. Chapter 4 provides description of the process of implementation these new tactics. Last but not least in Chapter 5 we will analyze the outcome of adaptation and application of these strategies.
+\chapter{Overview of existing strategies}
+In this chapter we will cover some of existing strategies for reducing the time cost of Mutation testing. We will mainly focus on reducing the amount of mutants generated by Mutation testing.
+\section{Mutation sampling}
+This approach randomly selects small subset of generated mutants. This proposal was originated by Acree \footfullcite{acree} and Budd\footfullcite{budd}. \par Using this method, first run of Mutation testing will generate all mutants. In the following executions of Mutation testing, they selected x\% of mutants that were going to be applied, rest of them was ignored. 
+\par Studies of this approach have shown, that selecting 10\% of mutants is 16\% less effective, than running Mutation analysis with all mutants.
+\section{Selective mutation}
+One way to reduce number of generated mutants is to reduce the amount of mutation operators. This idea was introduced by Mathur in 1991 by the name of "constraint mutation".
+Later on, this idea was developed by Offut et al.\footfullcite{offut}, and gained its name of "selective mutation". 
+\par The size of generated mutants differs from the mutation operator applied. In their study, they omitted two mutation operators, namely ASR (array reference for scalar variable replacement) and SVR (scalar variable replacement), which were generating the most of the mutants (30\% to 40\% approximately), they invented technique called "2-selective mutation". Furthermore they extended 2-selective reduction into 4-selective reduction and 6-selective mutation. \par In their research, they have reached 24\% reduction in the number of mutants produced, while keeping 99.99\% mean mutation score using the 2-selective mutation method. 4-selective mutation has revealed 41\% reduction of mutants with 99.84\% mutation score. 6-selective mutation  achieved even better results: 60\% reduction and having 88.71\% mean mutation score.
+\section{Higher Order Mutation}
+Traditionally, mutants can be classified into first-order mutants (\textit{FOM}) and higher-order mutants (\textit{HOM}). This classification was derived from the number of applied mutations. \textit{FOMs} are mutants with single mutation, \textit{HOMs} contain at least one mutation. The concept of Higher Order Mutation method relies in finding \textit{HOMs} that are generating subtle faults. This concept was introduced by Jia and Harman.
+\footfullcite{jia2008constructing}. 
+\par In their findings, they discovered the notion of subsuming \textit{HOMs}. These subsuming \textit{HOMs} are killed with more difficulties than \textit{FOM}, from which they originated. The outcome of this method is to replace \textit{FOMs} with single \textit{HOM}, thus reducing the number of created mutants.
+\par Results of this study are backed by empirical studies of using second-order mutants, e.g mutants created by combining \textit{FOMs}. These studies have revealed approximately 50\% efficiency in computational time, while keeping great test effectiveness.
+\chapter{Analysis of new strategies}
+In this chapter we will go through new ways of optimizing time complexity of running Mutation analysis.
+\section{Differential Analysis}
+\subsection{Requirements specification}
+\subsection{Core Intention}
+The focus of running Mutation testing using Differential Analysis is to run a specific subset of the test suite. This subset contains tests, that are using only modified units of the source code. In this thesis, we will be referring only to Java objects as these modified units.
+\par The workflow of this process is following: compile project, check for changed classes, find tests that are using these classes, execute selected tests. This process can be described using state graph:
+\chapter{Implementing new tactics}
+\chapter{Evaluation of results}
+\chapter{Conclusion}
+\end{document}
